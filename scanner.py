@@ -2,7 +2,7 @@ from class_info import Tokens,Errors
 from code_enum import TokensAndClasses
 
 
- 
+
 def Scanner(Source):
     source_length = len(Source)
     scaner = iter(range(source_length))             # 扫描器（迭代器）
@@ -71,15 +71,18 @@ def Scanner(Source):
                                 square += 1
                                 now_index = next(scaner)
                                 now_symbol = Source[now_index]
-                            if now_symbol == '.':
-                                # goto 到line61
-                                pass    
-                        if now_symbol.isalnum() or square == 1:
-                            is_valid = False
-                            if square == 1:
-                                Errors(Line_Num,str(result)+'.','错误的十进制数')
-                            else:
-                                Errors(Line_Num,str(result)+str(now_symbol),'错误的十进制数')
+                            if now_symbol == '.' or now_symbol.isalpha():  
+                                is_valid = False
+                                if square == 1:
+                                    Errors(Line_Num,str(result)+'.','错误的十进制数')
+                                else:
+                                    Errors(Line_Num,str(result)+str(now_symbol),'错误的浮点数')
+
+                                while(now_symbol.isalnum() or now_symbol == '.'):
+                                    now_index = next(scaner)
+                                    now_symbol = Source[now_index]
+                                continue
+
 
                     elif now_symbol == 'b' or now_symbol == 'B':
                         # 二进制
@@ -128,9 +131,13 @@ def Scanner(Source):
                         square += 1
                         now_index = next(scaner)
                         now_symbol = Source[now_index]
-                    if now_symbol.isalnum():
+                    if now_symbol == '.' or now_symbol.isalpha():  
                         is_valid = False
-                        Errors(Line_Num,str(result)+str(now_symbol),'错误的浮点数')
+                        Errors(Line_Num,str(result)+'.','错误的浮点数')
+                        while(now_symbol.isalnum() or now_symbol == '.'):
+                            now_index = next(scaner)
+                            now_symbol = Source[now_index]
+
 
                 elif now_symbol.isalpha():
                     is_valid = False
@@ -241,7 +248,10 @@ def Scanner(Source):
                     Tokens(Line_Num, '++','运算符',True,TokensAndClasses.Inc)
                     now_index = next(scaner)
                     now_symbol = Source[now_index]
-
+                elif now_symbol == '=':
+                    Tokens(Line_Num, '+=','运算符',True,TokensAndClasses.Inc)
+                    now_index = next(scaner)
+                    now_symbol = Source[now_index]
                 else:
                     Tokens(Line_Num, '+','运算符',True,TokensAndClasses.Add)
 
@@ -250,6 +260,10 @@ def Scanner(Source):
                 now_symbol = Source[now_index]
                 if now_symbol == '-':
                     Tokens(Line_Num, '--','运算符',True,TokensAndClasses.Dec)
+                    now_index = next(scaner)
+                    now_symbol = Source[now_index]
+                elif now_symbol == '=':
+                    Tokens(Line_Num, '-=','运算符',True,TokensAndClasses.Inc)
                     now_index = next(scaner)
                     now_symbol = Source[now_index]
                 else:
