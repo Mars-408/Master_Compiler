@@ -1,5 +1,5 @@
-from class_info import Tokens,Errors
-from code_enum import TokensAndClasses
+from ClassInfo import Tokens,Errors
+from CodeEnum import TokensAndClasses
 
 
 

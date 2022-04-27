@@ -1,10 +1,10 @@
-from scanner import Scanner
-from class_info import Errors,Tokens
-
-
+import threading
+from Scanner import Scanner
+from ClassInfo import Errors,Tokens
 
 from tkinter import *
 from tkinter import filedialog
+from UI_NFA_DFA_MFA import runwindow
 
 files = [('C Files', '*.c')]
 FileStr = ""
@@ -69,12 +69,9 @@ def Lexical_Analysis():
     T3.update()
 
 
-
-
-
-def Rreprocess():
-    pass
-
+def NFA_DFA_MFA():
+    t1 = threading.Thread(target=runwindow)
+    t1.start()
 
 def Automate():
     pass
@@ -92,9 +89,9 @@ root = Tk()
 root.title("Principles Of Compiler")
 root.geometry("900x600")
 root.resizable(0, 0)
-Button_File = ["Open", "Save", "Quit"]
-Button_Edit = ["Writing", "Readonly"]
-Button_ProcessManage = ["Lexical Analysis", "Automata", "LL(0)", "LR(0)"]
+Button_File = ["打开", "保存", "离开"]
+Button_Edit = ["可写", "只读"]
+Button_ProcessManage = ["词法分析", "自动机", "LL(0)", "LR(0)","NFA_DFA_MFA"]
 Menubar = Menu(root)
 root["menu"] = Menubar
 File = Menu(Menubar, tearoff=False)
@@ -112,24 +109,24 @@ ProcessManage.add_command(label=Button_ProcessManage[0],    command=Lexical_Anal
 ProcessManage.add_command(label=Button_ProcessManage[1], command=Automate)
 ProcessManage.add_command(label=Button_ProcessManage[2], command=LL)
 ProcessManage.add_command(label=Button_ProcessManage[3], command=LR)
-Menubar.add_cascade(label="File", menu=File)
-Menubar.add_cascade(label="Edit", menu=Edit)
-Menubar.add_cascade(label="Compilte", menu=ProcessManage)
+ProcessManage.add_command(label=Button_ProcessManage[4], command=NFA_DFA_MFA)
+Menubar.add_cascade(label="文件", menu=File)
+Menubar.add_cascade(label="编辑", menu=Edit)
+Menubar.add_cascade(label="编译", menu=ProcessManage)
 # 菜单栏下的按钮
 img1 = PhotoImage(file="").subsample(9, 9)
 img2 = PhotoImage(file="").subsample(9, 9)  # 按比例压缩
 img3 = PhotoImage(file="").subsample(9, 9)
 frame = Frame(root, width=900)
-FrameButton1 = Button(frame,image=img1,text='Open',bd=0,command=Open,compound="left")
-FrameButton2 = Button(frame,image=img2,text='Save',bd=0,command=Save,compound="left")
-FrameButton3 = Button(frame,image=img3,text='Quit',bd=0,command=Exit,compound="left")
-FrameButton4 = Button(frame,text='| Write',bd=0,command=Allow_Edit,compound="left")
-FrameButton5 = Button(frame,text=' Readonly',bd=0,command=Forbid_Edit,compound="left")
-FrameButton6 = Button(frame,text='| Lexical Analysis',bd=0,command=Lexical_Analysis,compound="left")
-FrameButton7 = Button(frame,text=' Automata',bd=0,command=Automate,compound="left")
+FrameButton1 = Button(frame,image=img1,text='打开',bd=0,command=Open,compound="left")
+FrameButton2 = Button(frame,image=img2,text='保存',bd=0,command=Save,compound="left")
+FrameButton3 = Button(frame,image=img3,text='离开',bd=0,command=Exit,compound="left")
+FrameButton4 = Button(frame,text='| 写模式',bd=0,command=Allow_Edit,compound="left")
+FrameButton5 = Button(frame,text=' 只读',bd=0,command=Forbid_Edit,compound="left")
+FrameButton6 = Button(frame,text='| 词法分析',bd=0,command=Lexical_Analysis,compound="left")
+FrameButton7 = Button(frame,text=' 自动机',bd=0,command=Automate,compound="left")
 FrameButton8 = Button(frame, text=' LL(1)', bd=0, command=LL, compound="left")
 FrameButton9 = Button(frame, text=' LR(0)', bd=0, command=LR, compound="left")
-FrameButton11 = Button(frame, text='Rreprocess', bd=0, command=Rreprocess, compound="left")
 FrameButton1.grid(row=0, column=0, sticky='w')
 FrameButton2.grid(row=0, column=1, sticky='w')
 FrameButton3.grid(row=0, column=2, sticky='w')
@@ -139,7 +136,6 @@ FrameButton6.grid(row=0, column=5, sticky='w')
 FrameButton7.grid(row=0, column=6, sticky='w')
 FrameButton8.grid(row=0, column=7, sticky='w')
 FrameButton9.grid(row=0, column=8, sticky='w')
-FrameButton11.grid(row=0, column=10, sticky='w')
 frame.pack(anchor=W)
 # 显示区域
 L1 = Label(root, text="Source")
