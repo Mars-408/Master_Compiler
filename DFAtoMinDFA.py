@@ -100,34 +100,37 @@ class DFAtoMinDFA():
     def CutGraph(self):
         # 对图进行修剪
         scissor = dict()                    # 生成一个字典
-        for item in self.EqualClass:        
-            # 遍历等价类，选取每个等价类中的代表生成scissor
-            scissor[item[0]] = False,None
-            for i in item[1:]:
-                scissor[i] = True,item[0]
         result = []
+        Count = 0
+        for item in self.EqualClass:
+            for i in item:
+                scissor[i] = 'T' + str(Count)
+            Count +=1
+
         for item in self.Graph:
             # 循环图中的每一条边
             Append = list(item)
+            New = [scissor[Append[0]],Append[1],scissor[Append[2]]]
+            if New not in result:
+                result.append(New)
             if scissor[item[0]][0]:
                 # 如果被合并节点发出了一条边——让主节点发出
                 Append[0] = scissor[item[0]][1]
-
-            if scissor[item[2]][0]:
-                # 如果被合并的节点收入了一条边——让主节点接收
-                Append[2] = scissor[item[2]][1]
-            if Append not in result:
-                result.append(Append)
         self.CutResult = result
         # 处理起始结点以及终止节点
-        if scissor[self.Head][0] is True:
-            self.Head = scissor[self.Head][1]
+        self.Head = scissor[self.Head]
         Temp = []
         for item in self.Tail:
-            if scissor[item][0] is True:
-                Temp.append(scissor[item][1])
+            Temp.append(scissor[item])
         Temp = list(set(Temp))
+        self.Tail = Temp
 
 if "__main__" == __name__:
     DtoM = DFAtoMinDFA([(0, 'a', 1), (1, 's', 2), (2, 'b', 3)],0,[3])
     DtoM.run()
+
+
+
+
+
+

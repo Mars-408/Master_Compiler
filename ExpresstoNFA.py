@@ -5,12 +5,6 @@
 import json
 
 
-# #读文件
-# file = open('test.txt', 'r') 
-# js = file.read()
-# dic = json.loads(js)   
-# print(dic) 
-# file.close()
 
 class ExpressToNFA:
     def __init__(self,express):
@@ -139,10 +133,7 @@ class ExpressToNFA:
 
             elif i == '*':
                 if len(Temp_Stack) == 0:
-                    print("Error_*")
-                    print(Temp_Stack)
-                    print(len(Temp_Stack))
-                    exit(0)
+                    raise TypeError("正规式异常")
                 Node_A = {
                     'State':Now_Count,
                     'Next':[],
@@ -166,10 +157,7 @@ class ExpressToNFA:
 
             elif i == '.':
                 if len(Temp_Stack) < 2:
-                    print("Error_.")
-                    print(Temp_Stack)
-                    print(len(Temp_Stack))
-                    exit(0)
+                    raise TypeError("正规式异常")
                 Stack_Pop_2 = Temp_Stack.pop(-1)    
                 Stack_Pop_1 = Temp_Stack.pop(-1)
                 Stack_Pop_2
@@ -182,10 +170,7 @@ class ExpressToNFA:
 
             elif i == '|':
                 if len(Temp_Stack) < 2:
-                    print("Error_|")
-                    print(Temp_Stack)
-                    print(len(Temp_Stack))
-                    exit(0)
+                    raise TypeError("正规式异常")
                 Node_A = {
                     'State':Now_Count,
                     'Next':[],
@@ -209,7 +194,7 @@ class ExpressToNFA:
         if len(Temp_Stack)==1:
             self.TempGraph = Temp_Stack[0]
         else:
-            print("Error")
+            raise TypeError("正规式异常")
 
     def BFS(self,Graph,alreadyPrint = []):
         # 对图进行BFS搜索，获取图的信息
@@ -234,3 +219,5 @@ class ExpressToNFA:
             'HeadGraph':self.TempGraph['Head']
         }
         self.result = result
+
+

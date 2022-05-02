@@ -173,8 +173,7 @@ class Ui_MainWindow(object):
         try:
             self.resetFun()
             Express = self.input.text()
-            if Express == None or Express.__len__()==0:
-                raise TypeError("输入异常")
+            self.checkExpress(Express)
             self.EtoN = ExpressToNFA(Express)
             self.ENresult = self.EtoN.run()
             self.NtoD = NFATODFA(self.ENresult['HeadGraph'],self.ENresult['Head'],self.ENresult['Tail'])
@@ -184,10 +183,58 @@ class Ui_MainWindow(object):
             QtWidgets.QMessageBox.about(self.centralwidget,"正规式检查","输入的正规式正确")
         except Exception as T:
             QtWidgets.QMessageBox.about(self.centralwidget,"正规式检查","输入的正规式错误\n详情:"+str(T))
-            print(T.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
-            print(T.__traceback__.tb_lineno)            # 发生异常所在的行数
             self.resetFun()
 
+    def checkExpress(self,input):
+        express = input + '#'
+        Sigma = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ()|*#'
+        # 字母,括号,| * 
+        if express == None or express.__len__()==0:
+            raise TypeError("请输入正规式再点击分析")
+        stack = []
+        for item in range(0,len(express)):
+            if express[item] not in Sigma:
+                raise TypeError("出现了不可解析的字符"+str(item)+express[item])
+            if express[item] == '|':
+                # 左侧可出现),*,字母、右侧可出现字母,(
+                L = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY)*#'
+                R = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY(#'
+                if express[item-1] not in L:
+                    raise TypeError("正规式检验错误,出错位置"+str(item))
+                if express[item+1] not in R:
+                    raise TypeError("正规式检验错误,出错位置"+str(item))
+            if express[item] == '*':
+                # 检验*,左侧仅能出现字母或者右括号
+                L = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY)*#'
+                R = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY()*|#'
+                if express[item-1] not in L:
+                    raise TypeError("正规式检验错误,出错位置"+str(item))
+                if express[item+1] not in R:
+                    raise TypeError("正规式检验错误,出错位置"+str(item))
+            if express[item] in '()':
+                L = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY()*|#'
+                R = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY(#'
+                stack.append(express[item])
+                if express[item] == '(':
+                    if express[item+1] not in R:
+                        raise TypeError("正规式检验错误,出错位置"+str(item))
+                    if express[item-1] not in R:
+                        raise TypeError("正规式检验错误,出错位置"+str(item))
+                L = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY)*#'
+                R = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY*|()#'        
+                if express[item] == ')':
+                    if express[item+1] not in R:
+                        raise TypeError("正规式检验错误,出错位置"+str(item))
+                    if express[item-1] not in R:
+                        raise TypeError("正规式检验错误,出错位置"+str(item))
+        if stack.count('(')!= stack.count(')'):
+            raise TypeError("括号不匹配")
+
+
+        
+
+
+        # 检验()
 
     def resetFun(self):
         self.EtoN = None
@@ -224,6 +271,7 @@ class Ui_MainWindow(object):
         except:
             QtWidgets.QMessageBox.about(self.centralwidget,"生成错误","请确保操作正确")
             return
+
 
     def generationNFAFun(self):
         if self.ENresult == None:
